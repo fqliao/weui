@@ -1,0 +1,82 @@
+[
+  {
+    "id": "R01",
+    "title": "申请标题",
+    "text": "标题去除首尾空格后长度为 1-200 个字符。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R02",
+    "title": "金额范围",
+    "text": "金额须为 1-1000000 的整数；零、负数与超限数值均拒绝。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R03",
+    "title": "状态转换",
+    "text": "草稿可提交为 PENDING；已提交申请重复提交不重复记账。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R04",
+    "title": "审批条件",
+    "text": "审批人须拥有 reviewer 角色；仅 PENDING 可审批，记录实际审批人。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R05",
+    "title": "驳回条件",
+    "text": "合法审批人可将 PENDING 改为 REJECTED 并记录审计。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R06",
+    "title": "对象授权",
+    "text": "操作前校验用户角色、租户和业务对象；请求失败不产生业务变更。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R07",
+    "title": "禁止自审批",
+    "text": "申请人不能审批自己的申请，即使其同时具备 reviewer 角色。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R08",
+    "title": "提交幂等",
+    "text": "同一申请提交只发生一次状态转换及一次 submit 审计。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R09",
+    "title": "租户隔离",
+    "text": "租户之间不可读取或修改对方申请。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  },
+  {
+    "id": "R10",
+    "title": "证据与清理",
+    "text": "不能仅凭成功提示判定通过；查询持久化结果并按 run_id 清理数据。",
+    "source": "sample-approval-spec@1.0",
+    "owner": "样例业务维护者",
+    "status": "SAMPLE_APPROVED"
+  }
+]

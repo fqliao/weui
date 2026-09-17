@@ -1,0 +1,30 @@
+node_modules/
+.next/
+dist/
+.env
+.env.*
+!.env.example
+.runtime/
+midscene_run/
+test-results/
+playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local investigation files and third-party reference material
+/tmp/
+/reference/
+
+# Keep authored design documents; generated reports can contain runtime evidence.
+/output/*
+!/output/*.md
+
+# Local credentials, logs, and machine-generated artifacts
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+coverage/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,11 @@
+{$TRACELAB_DOMAIN} {
+  tls internal
+  encode zstd gzip
+  reverse_proxy app:3100 {
+    flush_interval -1
+  }
+  header {
+    X-Content-Type-Options nosniff
+    Referrer-Policy same-origin
+  }
+}

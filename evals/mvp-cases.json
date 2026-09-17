@@ -1,0 +1,22 @@
+[
+  {"id":"E01","caseId":"C01","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E02","caseId":"C02","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E03","caseId":"C03","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E04","caseId":"C06","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E05","caseId":"C09","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E06","caseId":"C10","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E07","caseId":"C11","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E08","caseId":"C12","group":"正常","fault":"none","expected":"PASS"},
+  {"id":"E09","caseId":"C01","group":"缺陷","fault":"fake-success","expected":"FAIL"},
+  {"id":"E10","caseId":"C04","group":"缺陷","fault":"validation-bypass","expected":"FAIL"},
+  {"id":"E11","caseId":"C09","group":"缺陷","fault":"permission-bypass","expected":"FAIL"},
+  {"id":"E12","caseId":"C10","group":"缺陷","fault":"permission-bypass","expected":"FAIL"},
+  {"id":"E13","caseId":"C11","group":"缺陷","fault":"duplicate-submit","expected":"FAIL"},
+  {"id":"E14","caseId":"C02","group":"缺陷","fault":"wrong-state","expected":"FAIL"},
+  {"id":"E15","caseId":"C01","group":"证据缺失","fault":"query-unavailable","expected":"INCONCLUSIVE"},
+  {"id":"E16","caseId":"C11","group":"证据缺失","fault":"query-unavailable","expected":"INCONCLUSIVE"},
+  {"id":"E17","caseId":"C01","group":"预算阻断","fault":"none","maxActions":1,"expected":"BLOCKED"},
+  {"id":"E18","caseId":"C09","group":"预算阻断","fault":"none","maxActions":2,"expected":"BLOCKED"},
+  {"id":"E19","caseId":"C01","group":"预算阻断","fault":"none","maxActions":3,"expected":"BLOCKED"},
+  {"id":"E20","caseId":"C01","group":"写后证据缺失","fault":"none","maxActions":4,"expected":"INCONCLUSIVE"}
+]

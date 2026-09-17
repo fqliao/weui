@@ -1,0 +1,55 @@
+name: Verify MVP
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BROWSER_EXECUTABLE_PATH: /usr/bin/google-chrome
+      MIDSCENE_MODEL_API_KEY: ${{ secrets.MIDSCENE_MODEL_API_KEY }}
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: uiagent
+          POSTGRES_PASSWORD: ci_database_password
+          POSTGRES_DB: uiagent
+        ports: ["55432:5432"]
+        options: --health-cmd "pg_isready -U uiagent" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8
+        ports: ["56379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: npm install -g pnpm@10.29.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec tsx scripts/ci-env.ts
+      - run: pnpm db:generate && pnpm db:migrate && pnpm db:seed
+      - run: google-chrome --version
+      - run: pnpm build && pnpm test
+      - name: Start and check services
+        run: |
+          pnpm start > .runtime/logs/launcher.log 2>&1 &
+          for i in $(seq 1 30); do
+            if pnpm health; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - run: pnpm test:integration
+      - run: pnpm test:e2e
+      - run: pnpm exec tsx scripts/regression.ts
+        if: env.MIDSCENE_MODEL_API_KEY != ''
+      - run: pnpm exec tsx scripts/evaluate.ts --catalog
+        if: env.MIDSCENE_MODEL_API_KEY != ''
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification
+          path: |
+            .runtime/verification
+            .runtime/screenshots
+            .runtime/logs
+          retention-days: 7

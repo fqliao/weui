@@ -1,0 +1,56 @@
+name: tracelab
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: uiagent
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a strong database password}
+      POSTGRES_DB: uiagent
+    volumes: ["database:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uiagent -d uiagent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  redis:
+    image: redis:8
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes: ["queue:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  app:
+    build: ..
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql://uiagent:${POSTGRES_PASSWORD}@postgres:5432/uiagent
+      REDIS_URL: redis://redis:6379
+      WEB_HOST: 0.0.0.0
+      WEB_ORIGIN: https://${TRACELAB_DOMAIN:?Set the internal domain}
+      API_ORIGIN: http://127.0.0.1:3101
+      SAMPLE_ORIGIN: http://127.0.0.1:3102
+      BROWSER_CHANNEL: ""
+      COOKIE_SECURE: "true"
+    volumes: ["runtime:/app/.runtime"]
+    shm_size: 1gb
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    restart: unless-stopped
+  gateway:
+    image: caddy:2
+    environment:
+      TRACELAB_DOMAIN: ${TRACELAB_DOMAIN}
+    ports: ["80:80", "443:443"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "tls:/data"]
+    depends_on: [app]
+    restart: unless-stopped
+volumes:
+  database:
+  queue:
+  runtime:
+  tls:

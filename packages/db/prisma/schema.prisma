@@ -1,0 +1,338 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  passwordHash String
+  role String @default("TESTER")
+  enabled Boolean @default(true)
+  createdAt DateTime @default(now())
+  memberships Membership[]
+  sessions Session[]
+}
+model Session {
+  id String @id
+  userId String
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+model Project {
+  id String @id @default(uuid())
+  name String
+  description String
+  sample Boolean @default(false)
+  createdAt DateTime @default(now())
+  memberships Membership[]
+  environments Environment[]
+}
+model Membership {
+  userId String
+  projectId String
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  @@id([userId,projectId])
+}
+model Environment {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  name String
+  baseUrl String
+  adapter String
+  credentialRef String
+  config Json
+  enabled Boolean @default(true)
+  createdAt DateTime @default(now())
+  revision Int @default(1)
+  loginProfiles LoginProfile[]
+  features WebFeature[]
+}
+model LoginProfile {
+  id String @id @default(uuid())
+  environmentId String
+  environment Environment @relation(fields:[environmentId],references:[id])
+  name String
+  kind String
+  config Json
+  encryptedSecret String
+  revision Int @default(1)
+  enabled Boolean @default(true)
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([environmentId])
+}
+model WebFeature {
+  id String @id @default(uuid())
+  environmentId String
+  environment Environment @relation(fields:[environmentId],references:[id])
+  name String
+  description String
+  revision Int @default(1)
+  enabled Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cases WebCase[]
+  @@index([environmentId])
+}
+model WebCase {
+  id String @id @default(uuid())
+  featureId String
+  feature WebFeature @relation(fields:[featureId],references:[id])
+  title String
+  content Json
+  revision Int @default(1)
+  enabled Boolean @default(true)
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([featureId])
+}
+model Discovery {
+  id String @id @default(uuid())
+  projectId String
+  environmentId String
+  taskId String @unique
+  title String
+  requirements String
+  maxPages Int
+  phase String @default("MAIN")
+  baselineDiscoveryId String?
+  baselineRunId String?
+  report Json @default("{}")
+  createdAt DateTime @default(now())
+  drafts DiscoveryDraft[]
+  @@index([projectId,createdAt])
+}
+model DiscoveryDraft {
+  id String @id @default(uuid())
+  discoveryId String
+  discovery Discovery @relation(fields:[discoveryId],references:[id])
+  content Json
+  status String @default("DRAFT")
+  revision Int @default(1)
+  publishedCaseId String? @unique
+  reviewerId String?
+  reviewNote String?
+  reviewedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([discoveryId])
+}
+model KnowledgeRelease {
+  id String @id
+  projectId String
+  name String
+  version String
+  hash String
+  content Json
+  published Boolean @default(true)
+  createdAt DateTime @default(now())
+  @@index([projectId,published])
+}
+model Skill {
+  id String @id @default(uuid())
+  projectId String
+  name String
+  description String
+  ownerId String
+  template Boolean @default(false)
+  draft Json
+  draftHash String
+  activeReleaseId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  releases SkillRelease[]
+  @@index([projectId])
+}
+model SkillRelease {
+  id String @id @default(uuid())
+  skillId String
+  skill Skill @relation(fields:[skillId],references:[id])
+  version Int
+  content Json
+  hash String
+  debugRunId String
+  publisherId String
+  disabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  @@unique([skillId,version])
+}
+model Task {
+  id String @id @default(uuid())
+  projectId String
+  environmentId String
+  creatorId String
+  title String
+  goal String
+  status String @default("DRAFT")
+  mode String @default("catalog")
+  knowledgeReleaseId String
+  skillReleaseId String?
+  debugSkillId String?
+  debugSkillHash String?
+  debugSkillContent Json?
+  budget Json
+  browserSnapshot Json?
+  revision Int @default(0)
+  error String?
+  planningLeaseOwner String?
+  planningHeartbeatAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  plans PlanRevision[]
+  runs Run[]
+  @@index([projectId,createdAt])
+}
+model PlanRevision {
+  id String @id @default(uuid())
+  taskId String
+  task Task @relation(fields:[taskId],references:[id],onDelete:Cascade)
+  revision Int
+  content Json
+  hash String
+  usage Json
+  createdAt DateTime @default(now())
+  @@unique([taskId,revision])
+}
+model Run {
+  id String @id @default(uuid())
+  taskId String
+  task Task @relation(fields:[taskId],references:[id])
+  projectId String
+  creatorId String
+  status String @default("QUEUED")
+  manifest Json
+  summary Json
+  usage Json
+  idempotencyKey String
+  parentRunId String?
+  leaseOwner String?
+  leaseEpoch Int @default(0)
+  heartbeatAt DateTime?
+  cancelRequestedAt DateTime?
+  startedAt DateTime?
+  finishedAt DateTime?
+  cleanupStatus String @default("PENDING")
+  error String?
+  createdAt DateTime @default(now())
+  events RunEvent[]
+  actions Action[]
+  evidence Evidence[]
+  feedback Feedback[]
+  @@unique([taskId,idempotencyKey])
+  @@index([projectId,createdAt])
+  @@index([status,heartbeatAt])
+}
+model Outbox {
+  id String @id @default(uuid())
+  kind String
+  referenceId String
+  dedupeKey String @unique
+  payload Json
+  deliveredAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([deliveredAt])
+}
+model RunEvent {
+  seq BigInt @id @default(autoincrement())
+  runId String
+  run Run @relation(fields:[runId],references:[id],onDelete:Cascade)
+  kind String
+  payload Json
+  createdAt DateTime @default(now())
+  @@index([runId,seq])
+}
+model Action {
+  id String @id
+  runId String
+  run Run @relation(fields:[runId],references:[id],onDelete:Cascade)
+  caseId String
+  tool String
+  status String
+  leaseEpoch Int
+  input Json
+  output Json?
+  error String?
+  createdAt DateTime @default(now())
+  finishedAt DateTime?
+  @@index([runId])
+}
+model Evidence {
+  id String @id @default(uuid())
+  runId String
+  run Run @relation(fields:[runId],references:[id],onDelete:Cascade)
+  caseId String?
+  kind String
+  fileName String
+  path String
+  contentType String
+  bytes Int
+  createdAt DateTime @default(now())
+}
+model Feedback {
+  id String @id @default(uuid())
+  runId String
+  run Run @relation(fields:[runId],references:[id],onDelete:Cascade)
+  userId String
+  rating Int
+  category String
+  comment String
+  createdAt DateTime @default(now())
+}
+model AuditEvent {
+  id String @id @default(uuid())
+  actorId String
+  projectId String?
+  action String
+  targetId String
+  detail Json
+  createdAt DateTime @default(now())
+}
+model Setting {
+  key String @id
+  value Json
+}
+model ExecutionCache {
+  id String @id
+  projectId String
+  environmentId String
+  caseId String
+  caseRevision Int
+  generation Int @default(1)
+  encryptedArtifact String
+  sourceRunId String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([projectId, environmentId, caseId])
+}
+model SampleRecord {
+  id String @id @default(uuid())
+  namespace String
+  tenant String
+  title String
+  amount Int
+  applicant String
+  status String @default("DRAFT")
+  reviewer String?
+  submitCount Int @default(0)
+  createdAt DateTime @default(now())
+  @@index([namespace])
+}
+model SampleAudit {
+  id String @id @default(uuid())
+  namespace String
+  recordId String
+  action String
+  actor String
+  idempotencyKey String @unique
+  createdAt DateTime @default(now())
+  @@index([namespace])
+}

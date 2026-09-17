@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "entities": [
+    "User",
+    "Role",
+    "Tenant",
+    "Application",
+    "State",
+    "Rule",
+    "Case",
+    "Assertion",
+    "Evidence"
+  ],
+  "relations": [
+    {
+      "from": "C01",
+      "type": "verifies",
+      "to": "R01"
+    },
+    {
+      "from": "C01",
+      "type": "verifies",
+      "to": "R02"
+    },
+    {
+      "from": "C01",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C01",
+      "type": "verifies",
+      "to": "R03"
+    },
+    {
+      "from": "C02",
+      "type": "verifies",
+      "to": "R03"
+    },
+    {
+      "from": "C02",
+      "type": "verifies",
+      "to": "R04"
+    },
+    {
+      "from": "C02",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C03",
+      "type": "verifies",
+      "to": "R03"
+    },
+    {
+      "from": "C03",
+      "type": "verifies",
+      "to": "R05"
+    },
+    {
+      "from": "C03",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C03",
+      "type": "verifies",
+      "to": "R04"
+    },
+    {
+      "from": "C04",
+      "type": "verifies",
+      "to": "R01"
+    },
+    {
+      "from": "C04",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C05",
+      "type": "verifies",
+      "to": "R01"
+    },
+    {
+      "from": "C05",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C06",
+      "type": "verifies",
+      "to": "R02"
+    },
+    {
+      "from": "C06",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C07",
+      "type": "verifies",
+      "to": "R02"
+    },
+    {
+      "from": "C07",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C08",
+      "type": "verifies",
+      "to": "R02"
+    },
+    {
+      "from": "C08",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C09",
+      "type": "verifies",
+      "to": "R04"
+    },
+    {
+      "from": "C09",
+      "type": "verifies",
+      "to": "R06"
+    },
+    {
+      "from": "C09",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C10",
+      "type": "verifies",
+      "to": "R04"
+    },
+    {
+      "from": "C10",
+      "type": "verifies",
+      "to": "R07"
+    },
+    {
+      "from": "C10",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C10",
+      "type": "verifies",
+      "to": "R06"
+    },
+    {
+      "from": "C11",
+      "type": "verifies",
+      "to": "R03"
+    },
+    {
+      "from": "C11",
+      "type": "verifies",
+      "to": "R08"
+    },
+    {
+      "from": "C11",
+      "type": "verifies",
+      "to": "R10"
+    },
+    {
+      "from": "C12",
+      "type": "verifies",
+      "to": "R06"
+    },
+    {
+      "from": "C12",
+      "type": "verifies",
+      "to": "R09"
+    },
+    {
+      "from": "C12",
+      "type": "verifies",
+      "to": "R10"
+    }
+  ]
+}

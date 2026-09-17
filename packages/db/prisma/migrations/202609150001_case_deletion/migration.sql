@@ -1,0 +1,1 @@
+ALTER TABLE "WebCase" ADD COLUMN "deletedAt" TIMESTAMP(3);

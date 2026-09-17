@@ -1,0 +1,12 @@
+node_modules
+**/node_modules
+**/.next
+.runtime
+.env
+.env.*
+!.env.example
+test-results
+playwright-report
+.git
+output/*.pdf
+output/*.png
